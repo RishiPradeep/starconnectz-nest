@@ -3,6 +3,9 @@
 /node_modules
 /build
 
+Dockerfile
+docker-compose.yaml
+
 # Logs
 logs
 *.log

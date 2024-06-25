@@ -41,6 +41,14 @@ export class ServiceService {
   async createServices(createServicesDto: CreateServicesDto) {
     try {
       const celebid = await this.checkIfExists(createServicesDto.username);
+      await this.prisma.celeb.update({
+        where: {
+          id: celebid,
+        },
+        data: {
+          bio: createServicesDto.bio,
+        },
+      });
       for (const item of createServicesDto.services) {
         await this.prisma.service.create({
           data: {

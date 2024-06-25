@@ -7,6 +7,9 @@ export class CreateServicesDto {
   @IsNotEmpty()
   username: string;
 
+  @IsString()
+  bio: string;
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ServiceDto)

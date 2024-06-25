@@ -5,6 +5,8 @@ export class CreateCelebDto {
   @IsNotEmpty()
   username: string;
   @IsString()
+  bio: string;
+  @IsString()
   @IsNotEmpty()
   email: string;
   @IsString()

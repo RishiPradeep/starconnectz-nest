@@ -134,6 +134,7 @@ export class CelebService {
             username: username,
           },
           data: {
+            bio: updateCelebDto.bio || celeb.bio,
             username: updateCelebDto.username || celeb.username,
             email: updateCelebDto.email || celeb.email,
             socials: updateCelebDto.socials || celeb.socials,
@@ -203,11 +204,12 @@ export class CelebService {
           `Celeb with username ${username} not found`,
         );
       } else {
-        return await this.prisma.celeb.delete({
+        const deletedCeleb = await this.prisma.celeb.delete({
           where: {
-            username: username,
+            id: celeb.id,
           },
         });
+        return { message: 'Celeb deleted', deletedCeleb };
       }
     } catch (error) {
       throw error;

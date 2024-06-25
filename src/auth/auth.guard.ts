@@ -30,8 +30,10 @@ export class AuthGuard implements CanActivate {
       ) {
         request['user'] = payload;
       }
-    } catch {
-      throw new UnauthorizedException();
+    } catch (error) {
+      throw new UnauthorizedException(
+        'Token invalid or expired. Please login again',
+      );
     }
     return true;
   }

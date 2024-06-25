@@ -42,7 +42,7 @@ export class AuthService {
     } = paseto;
     user.secret_key = this.configService.getOrThrow('PASETO_KEY');
     const private_key = fs.readFileSync('private-key.pem');
-    const token = await sign(user, private_key, { expiresIn: '60s' });
+    const token = await sign(user, private_key, { expiresIn: '300m' });
     return token;
   }
 

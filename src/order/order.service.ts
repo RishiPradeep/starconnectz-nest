@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
@@ -6,6 +10,32 @@ import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 @Injectable()
 export class OrderService {
   constructor(private prisma: PrismaService) {}
+
+  async checkIfOrderExists(createOrderDto: CreateOrderDto): Promise<Boolean> {
+    try {
+      const orders = await this.prisma.order.findMany({
+        where: {
+          celebid: createOrderDto.celebid,
+          serviceid: createOrderDto.serviceid,
+          fanid: createOrderDto.fanid,
+        },
+      });
+      if (orders === null) {
+        return true;
+      } else {
+        for (const order of orders) {
+          if (order.status != 'completed') {
+            throw new ConflictException(
+              'This order already exists and has not been completed',
+            );
+          }
+        }
+      }
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
 
   async getData(celebid: number, fanid: number, serviceid: number) {
     try {
@@ -80,6 +110,7 @@ export class OrderService {
 
   async createOrder(createOrderDto: CreateOrderDto) {
     try {
+      await this.checkIfOrderExists(createOrderDto);
       const { celeb, fan, service } = await this.getData(
         createOrderDto.celebid,
         createOrderDto.fanid,

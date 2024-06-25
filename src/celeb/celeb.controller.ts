@@ -20,6 +20,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateProfilePicDto } from './dto/update-profile-pic.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { ValidationGuard } from 'src/auth/validation.guard';
 
 @Controller('celeb')
 export class CelebController {
@@ -42,7 +43,7 @@ export class CelebController {
     return await this.celebService.createOne(createCelebDto);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, ValidationGuard)
   @Post('updateProfilePic')
   @UseInterceptors(FileInterceptor('image'))
   async updateProfilePic(
@@ -63,7 +64,7 @@ export class CelebController {
     );
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, ValidationGuard)
   @Patch(':username')
   async updateOne(
     @Param('username') username: string,
@@ -72,7 +73,7 @@ export class CelebController {
     return await this.celebService.updateOne(username, updateCelebDto);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, ValidationGuard)
   @Delete(':username')
   async deleteOne(@Param('username') username: string) {
     return await this.celebService.deleteOne(username);

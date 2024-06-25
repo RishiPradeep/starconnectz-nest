@@ -6,6 +6,7 @@ import { CreateFanDto } from './dto/create-fan.dto';
 import { UpdateFanDto } from './dto/update-fan.dto';
 import { FollowCelebDto } from './dto/follow-celeb.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { ValidationGuard } from 'src/auth/validation.guard';
 @Controller('fan')
 export class FanController {
   constructor(private readonly fanService: FanService) {}
@@ -16,7 +17,7 @@ export class FanController {
     return await this.fanService.findAll();
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, ValidationGuard)
   @Get(':username/feed')
   async getFeed(@Param('username') username: string) {
     return await this.fanService.getFeed(username);
@@ -39,7 +40,7 @@ export class FanController {
     return await this.fanService.followOne(followCelebDto);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, ValidationGuard)
   @Patch(':username')
   async updateOne(
     @Param('username') username: string,
@@ -48,7 +49,7 @@ export class FanController {
     return await this.fanService.updateOne(username, updateFanDto);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, ValidationGuard)
   @Delete(':username')
   async deleteOne(@Param('username') username: string) {
     return await this.fanService.deleteOne(username);
