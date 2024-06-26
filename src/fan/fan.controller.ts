@@ -1,4 +1,4 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import { Controller, Req, UseGuards } from '@nestjs/common';
 import { FanService } from './fan.service';
 import { Get, Post, Patch, Delete, Param, Body } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common';
@@ -36,8 +36,11 @@ export class FanController {
 
   @UseGuards(AuthGuard)
   @Post('follow')
-  async followOne(@Body(ValidationPipe) followCelebDto: FollowCelebDto) {
-    return await this.fanService.followOne(followCelebDto);
+  async followOne(
+    @Body(ValidationPipe) followCelebDto: FollowCelebDto,
+    @Req() request: Request,
+  ) {
+    return await this.fanService.followOne(followCelebDto, request);
   }
 
   @UseGuards(AuthGuard, ValidationGuard)

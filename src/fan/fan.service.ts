@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { NotFoundException, ConflictException } from '@nestjs/common';
 import { CreateFanDto } from './dto/create-fan.dto';
@@ -91,8 +91,13 @@ export class FanService {
     }
   }
 
-  async followOne(followCelebDto: FollowCelebDto) {
+  async followOne(followCelebDto: FollowCelebDto, request: any) {
     try {
+      if (request.user.username != followCelebDto.fan_username) {
+        throw new UnauthorizedException(
+          'This user does not have permission to modify this resource',
+        );
+      }
       const celeb = await this.prisma.celeb.findUnique({
         where: { username: followCelebDto.celeb_username },
       });

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateServicesDto } from './dto/create-service.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -38,8 +42,13 @@ export class ServiceService {
     }
   }
 
-  async createServices(createServicesDto: CreateServicesDto) {
+  async createServices(createServicesDto: CreateServicesDto, request: any) {
     try {
+      if (request.user.username != createServicesDto.username) {
+        throw new UnauthorizedException(
+          'This user does not have permission to access this resource',
+        );
+      }
       const celebid = await this.checkIfExists(createServicesDto.username);
       await this.prisma.celeb.update({
         where: {
@@ -69,7 +78,21 @@ export class ServiceService {
     }
   }
 
-  async deleteService(serviceid: number) {
+  async deleteService(serviceid: number, request: any) {
+    try {
+      const checkUsername = await this.prisma.service.findUnique({
+        where: {
+          id: serviceid,
+        },
+      });
+      if (checkUsername.celeb_username != request.user.username) {
+        throw new UnauthorizedException(
+          'This user does not have permission to modify this resource',
+        );
+      }
+    } catch (error) {
+      throw error;
+    }
     const service = await this.prisma.service.findUnique({
       where: {
         id: serviceid,

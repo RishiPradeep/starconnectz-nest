@@ -28,6 +28,7 @@ model celeb {
    services    service[]
    followers   fan[]       @relation("User_follows")
    orders      order[]
+   @@unique([id,username])
 }
 
 model fan {
@@ -40,6 +41,7 @@ model fan {
   createdAt     DateTime    @default(now())
   following     celeb[]     @relation("User_follows")
   orders        order[]
+  @@unique([id,username])
 }
 
 model post {
@@ -49,7 +51,7 @@ model post {
   created_at          DateTime     @default(now())
   imagename           String
   caption             String
-  celeb               celeb        @relation(fields: [celebid], references: [id])
+  celeb               celeb        @relation(fields: [celebid,celeb_username], references: [id,username], onDelete: Cascade, onUpdate: Cascade )
 }
 
 model order {
@@ -63,9 +65,9 @@ model order {
   fan_username      String
   celeb_username    String
   service_details   String
-  celeb             celeb        @relation(fields: [celebid], references: [id])
-  fan               fan          @relation(fields: [fanid], references: [id])
-  service           service      @relation(fields: [serviceid], references: [id])
+  celeb             celeb        @relation(fields: [celebid,celeb_username], references: [id,username], onDelete: Cascade, onUpdate: Cascade)
+  fan               fan          @relation(fields: [fanid,fan_username], references: [id,username], onDelete: Cascade, onUpdate: Cascade)
+  service           service      @relation(fields: [serviceid,service_details], references: [id,description], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model service {
@@ -77,5 +79,6 @@ time_needed         Int
 celeb_username      String
 orders              order[]
 category            String
-celeb               celeb        @relation(fields: [celebid], references: [id])
+celeb               celeb        @relation(fields: [celebid,celeb_username], references: [id,username], onDelete: Cascade, onUpdate: Cascade)
+@@unique([id,description])
 }

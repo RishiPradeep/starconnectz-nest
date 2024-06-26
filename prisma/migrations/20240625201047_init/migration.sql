@@ -12,6 +12,7 @@ CREATE TABLE `celeb` (
 
     UNIQUE INDEX `celeb_username_key`(`username`),
     UNIQUE INDEX `celeb_email_key`(`email`),
+    UNIQUE INDEX `celeb_id_username_key`(`id`, `username`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -27,6 +28,7 @@ CREATE TABLE `fan` (
 
     UNIQUE INDEX `fan_username_key`(`username`),
     UNIQUE INDEX `fan_email_key`(`email`),
+    UNIQUE INDEX `fan_id_username_key`(`id`, `username`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -68,6 +70,7 @@ CREATE TABLE `service` (
     `celeb_username` VARCHAR(191) NOT NULL,
     `category` VARCHAR(191) NOT NULL,
 
+    UNIQUE INDEX `service_id_description_key`(`id`, `description`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -81,19 +84,19 @@ CREATE TABLE `_User_follows` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `post` ADD CONSTRAINT `post_celebid_fkey` FOREIGN KEY (`celebid`) REFERENCES `celeb`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `post` ADD CONSTRAINT `post_celebid_celeb_username_fkey` FOREIGN KEY (`celebid`, `celeb_username`) REFERENCES `celeb`(`id`, `username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `order` ADD CONSTRAINT `order_celebid_fkey` FOREIGN KEY (`celebid`) REFERENCES `celeb`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `order` ADD CONSTRAINT `order_celebid_celeb_username_fkey` FOREIGN KEY (`celebid`, `celeb_username`) REFERENCES `celeb`(`id`, `username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `order` ADD CONSTRAINT `order_fanid_fkey` FOREIGN KEY (`fanid`) REFERENCES `fan`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `order` ADD CONSTRAINT `order_fanid_fan_username_fkey` FOREIGN KEY (`fanid`, `fan_username`) REFERENCES `fan`(`id`, `username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `order` ADD CONSTRAINT `order_serviceid_fkey` FOREIGN KEY (`serviceid`) REFERENCES `service`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `order` ADD CONSTRAINT `order_serviceid_service_details_fkey` FOREIGN KEY (`serviceid`, `service_details`) REFERENCES `service`(`id`, `description`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `service` ADD CONSTRAINT `service_celebid_fkey` FOREIGN KEY (`celebid`) REFERENCES `celeb`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `service` ADD CONSTRAINT `service_celebid_celeb_username_fkey` FOREIGN KEY (`celebid`, `celeb_username`) REFERENCES `celeb`(`id`, `username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_User_follows` ADD CONSTRAINT `_User_follows_A_fkey` FOREIGN KEY (`A`) REFERENCES `celeb`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

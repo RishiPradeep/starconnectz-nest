@@ -9,6 +9,7 @@ import {
   ParseFilePipe,
   Patch,
   Post,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -21,6 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateProfilePicDto } from './dto/update-profile-pic.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ValidationGuard } from 'src/auth/validation.guard';
+import { Request } from 'express';
 
 @Controller('celeb')
 export class CelebController {
@@ -43,7 +45,7 @@ export class CelebController {
     return await this.celebService.createOne(createCelebDto);
   }
 
-  @UseGuards(AuthGuard, ValidationGuard)
+  @UseGuards(AuthGuard)
   @Post('updateProfilePic')
   @UseInterceptors(FileInterceptor('image'))
   async updateProfilePic(
@@ -57,10 +59,12 @@ export class CelebController {
     )
     file: Express.Multer.File,
     @Body(ValidationPipe) updateProfilePicDto: UpdateProfilePicDto,
+    @Req() request: Request,
   ) {
     return await this.celebService.updateProfilePic(
       updateProfilePicDto,
       file.buffer,
+      request,
     );
   }
 

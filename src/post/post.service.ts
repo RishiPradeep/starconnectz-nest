@@ -4,7 +4,11 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -81,8 +85,13 @@ export class PostService {
     }
   }
 
-  async upload(createPostDto: CreatePostDto, file: Buffer) {
+  async upload(createPostDto: CreatePostDto, file: Buffer, request: any) {
     try {
+      if (request.user.username != createPostDto.celeb_username) {
+        throw new UnauthorizedException(
+          'This user does not have permission to access this resource',
+        );
+      }
       const celebid = await this.checkIfExists(createPostDto.celeb_username);
       const imageName = this.generateFileName();
       const buffer = await this.resizeImage(file);
@@ -137,7 +146,21 @@ export class PostService {
     }
   }
 
-  async deleteOnePost(deletePostDto: DeletePostDto) {
+  async deleteOnePost(deletePostDto: DeletePostDto, request: any) {
+    try {
+      const post = await this.prisma.post.findUnique({
+        where: {
+          id: deletePostDto.postid,
+        },
+      });
+      if (request.user.username != post.celeb_username) {
+        throw new UnauthorizedException(
+          'This user does not have permission to modify this resource',
+        );
+      }
+    } catch (error) {
+      throw error;
+    }
     try {
       const check = await this.prisma.post.findUnique({
         where: {

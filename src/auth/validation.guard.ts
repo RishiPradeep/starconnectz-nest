@@ -9,9 +9,6 @@ import {
 export class ValidationGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    console.log('Request User = ', request.user);
-    console.log('Request Body = ', request.body);
-    console.log('Request params = ', request.params);
     if (JSON.stringify(request.params) != '{}') {
       if (request.params.username) {
         const check = request.params.username === request.user.username;

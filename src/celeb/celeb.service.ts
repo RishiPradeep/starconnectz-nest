@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCelebDto } from './dto/create-celeb.dto';
@@ -11,6 +12,7 @@ import { UpdateProfilePicDto } from './dto/update-profile-pic.dto';
 import * as sharp from 'sharp';
 import * as bcrypt from 'bcrypt';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { Request } from 'express';
 
 @Injectable()
 export class CelebService {
@@ -150,8 +152,14 @@ export class CelebService {
   async updateProfilePic(
     updateProfilePicDto: UpdateProfilePicDto,
     file: Buffer,
+    request: any,
   ) {
     try {
+      if (request.user.username != updateProfilePicDto.username) {
+        throw new UnauthorizedException(
+          'This user does not have permission to modify this resource',
+        );
+      }
       const check = await this.prisma.celeb.findUnique({
         where: {
           username: updateProfilePicDto.username,

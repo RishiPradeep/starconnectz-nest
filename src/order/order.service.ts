@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -89,7 +90,12 @@ export class OrderService {
     }
   }
 
-  async getOrders(username: string) {
+  async getCelebOrders(username: string, request: any) {
+    if (request.user.username != username) {
+      throw new UnauthorizedException(
+        'This user does not have permission to access this resource',
+      );
+    }
     try {
       const celebid = await this.checkIfExists(username);
       const orders = await this.prisma.order.findMany({
@@ -108,7 +114,38 @@ export class OrderService {
     }
   }
 
-  async createOrder(createOrderDto: CreateOrderDto) {
+  async getFanOrders(username: string, request: any) {
+    if (request.user.username != username) {
+      throw new UnauthorizedException(
+        'This user does not have permission to access this resource',
+      );
+    }
+    try {
+      const fan = await this.prisma.fan.findUnique({
+        where: {
+          username: username,
+        },
+      });
+      if (fan === null) {
+        throw new NotFoundException(`Fan with username ${username} not found`);
+      }
+      const orders = await this.prisma.order.findMany({
+        where: {
+          fanid: fan.id,
+        },
+      });
+      return { orders };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createOrder(createOrderDto: CreateOrderDto, request: any) {
+    if (request.user.id != createOrderDto.fanid) {
+      throw new UnauthorizedException(
+        'This user does not have permission to access this resource',
+      );
+    }
     try {
       await this.checkIfOrderExists(createOrderDto);
       const { celeb, fan, service } = await this.getData(
@@ -116,6 +153,17 @@ export class OrderService {
         createOrderDto.fanid,
         createOrderDto.serviceid,
       );
+      const celebServices = await this.prisma.service.findMany({
+        where: {
+          celebid: createOrderDto.celebid,
+          id: createOrderDto.serviceid,
+        },
+      });
+      if (celebServices.length === 0) {
+        throw new NotFoundException(
+          `The celeb with id ${createOrderDto.celebid} does not have a service of id ${createOrderDto.serviceid}`,
+        );
+      }
       const order = await this.prisma.order.create({
         data: {
           celebid: celeb.id,
@@ -133,7 +181,7 @@ export class OrderService {
     }
   }
 
-  async deleteOrder(orderid: number) {
+  async deleteOrder(orderid: number, request: any) {
     const order = await this.prisma.order.findUnique({
       where: {
         id: orderid,
@@ -141,6 +189,11 @@ export class OrderService {
     });
     if (order === null) {
       throw new NotFoundException(`Order with ${orderid} not found`);
+    }
+    if (order.fan_username != request.user.username) {
+      throw new UnauthorizedException(
+        'This user does not have permission to access this resource',
+      );
     }
     await this.prisma.order.delete({
       where: {
@@ -153,6 +206,7 @@ export class OrderService {
   async updateStatus(
     orderid: number,
     updateOrderStatusDto: UpdateOrderStatusDto,
+    request: any,
   ) {
     const order = await this.prisma.order.findUnique({
       where: {
@@ -161,6 +215,11 @@ export class OrderService {
     });
     if (order === null) {
       throw new NotFoundException(`Order with id ${orderid} not found`);
+    }
+    if (order.celeb_username != request.user.username) {
+      throw new UnauthorizedException(
+        'This user does not have permission to access this resource',
+      );
     }
     await this.prisma.order.update({
       where: {

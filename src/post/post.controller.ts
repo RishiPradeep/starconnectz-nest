@@ -8,6 +8,7 @@ import {
   Param,
   ParseFilePipe,
   Post,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -18,6 +19,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { PostService } from './post.service';
 import { DeletePostDto } from './dto/delete-post.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { Request } from 'express';
 
 @Controller('post')
 export class PostController {
@@ -37,8 +39,9 @@ export class PostController {
     )
     file: Express.Multer.File,
     @Body(ValidationPipe) createPostDto: CreatePostDto,
+    @Req() request: Request,
   ) {
-    return await this.postService.upload(createPostDto, file.buffer);
+    return await this.postService.upload(createPostDto, file.buffer, request);
   }
 
   @UseGuards(AuthGuard)
@@ -49,7 +52,10 @@ export class PostController {
 
   @UseGuards(AuthGuard)
   @Delete()
-  async deleteOnePost(@Body(ValidationPipe) deletePostDto: DeletePostDto) {
-    return await this.postService.deleteOnePost(deletePostDto);
+  async deleteOnePost(
+    @Body(ValidationPipe) deletePostDto: DeletePostDto,
+    @Req() request: Request,
+  ) {
+    return await this.postService.deleteOnePost(deletePostDto, request);
   }
 }
