@@ -11,8 +11,12 @@ import { UpdateCelebDto } from './dto/update-celeb.dto';
 import { UpdateProfilePicDto } from './dto/update-profile-pic.dto';
 import * as sharp from 'sharp';
 import * as bcrypt from 'bcrypt';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { Request } from 'express';
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()
 export class CelebService {
@@ -72,11 +76,31 @@ export class CelebService {
         where: {
           username,
         },
+        include: {
+          posts: {
+            orderBy: {
+              created_at: 'desc',
+            },
+          },
+          services: true,
+          followers: true,
+        },
       });
       if (celeb === null) {
         throw new NotFoundException(
           `Celeb with username ${username} not found`,
         );
+      }
+      for (const item of celeb.posts) {
+        const getObjectParams = {
+          Bucket: this.configService.getOrThrow('POSTS_BUCKET_NAME'),
+          Key: item.imagename,
+        };
+        const command = new GetObjectCommand(getObjectParams);
+        const url = await getSignedUrl(this.s3Client, command, {
+          expiresIn: 3600,
+        });
+        (item as any).imageURL = url;
       }
       return celeb;
     } catch (error) {
