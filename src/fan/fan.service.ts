@@ -5,10 +5,25 @@ import { CreateFanDto } from './dto/create-fan.dto';
 import { UpdateFanDto } from './dto/update-fan.dto';
 import { FollowCelebDto } from './dto/follow-celeb.dto';
 import * as bcrypt from 'bcrypt';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class FanService {
-  constructor(private prisma: PrismaService) {}
+  private readonly s3Client: S3Client;
+  constructor(
+    private prisma: PrismaService,
+    private readonly configService: ConfigService,
+  ) {
+    this.s3Client = new S3Client({
+      credentials: {
+        accessKeyId: this.configService.getOrThrow('ACCESS_KEY'),
+        secretAccessKey: this.configService.getOrThrow('SECRET_ACCESS_KEY'),
+      },
+      region: this.configService.getOrThrow('BUCKET_REGION'),
+    });
+  }
 
   checkUnique = async (
     username?: string,
@@ -186,6 +201,22 @@ export class FanService {
             created_at: 'desc',
           },
           take: 2,
+        });
+        for (const item of posts) {
+          const getObjectParams = {
+            Bucket: this.configService.getOrThrow('POSTS_BUCKET_NAME'),
+            Key: item.imagename,
+          };
+          const command = new GetObjectCommand(getObjectParams);
+          const url = await getSignedUrl(this.s3Client, command, {
+            expiresIn: 3600,
+          });
+          (item as any).imageURL = url;
+        }
+        posts.sort((a: any, b: any) => {
+          const dateA = new Date(a);
+          const dateB = new Date(b);
+          return dateA.getTime() - dateB.getTime();
         });
         feed.push(posts);
       }
