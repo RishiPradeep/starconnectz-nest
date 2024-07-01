@@ -10,4 +10,7 @@ export class CreateVideoDto {
   @IsNotEmpty()
   @IsString()
   description: string;
+  @IsNumber()
+  @IsNotEmpty()
+  orderid: number;
 }

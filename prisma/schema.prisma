@@ -65,6 +65,9 @@ model order {
   fan_username      String
   celeb_username    String
   service_details   String
+  audio_name        String       @default("")
+  video_name        String       @default("")
+  reject_reason     String       @default("")
   occassion         String       @default("occassion")
   wishes_to         String       @default("wishes_to")
   additional_info   String       @default("additional_info")

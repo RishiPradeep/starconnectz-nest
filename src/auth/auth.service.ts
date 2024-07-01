@@ -56,6 +56,7 @@ export class AuthService {
       const data = {
         username: user.username,
         id: user.id,
+        type: loginUserDto.type,
       };
       const token = await this.generateToken(data);
       return { accessToken: token, userId: data.id, username: data.username };

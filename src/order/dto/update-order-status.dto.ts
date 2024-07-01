@@ -2,7 +2,7 @@ import { IsEnum, IsNotEmpty } from 'class-validator';
 
 enum categories {
   PENDING = 'pending',
-  INPROGRESS = 'inprogress',
+  INPROGRESS = 'rejected',
   COMPLETED = 'completed',
 }
 

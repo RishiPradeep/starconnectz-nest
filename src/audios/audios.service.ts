@@ -81,6 +81,16 @@ export class AudiosService {
         `Fan with username ${createAudioDto.fan_username} not found`,
       );
     }
+    const order = await this.prisma.order.findUnique({
+      where: {
+        id: createAudioDto.orderid,
+      },
+    });
+    if (order === null) {
+      throw new NotFoundException(
+        `Order with id ${createAudioDto.orderid} not found`,
+      );
+    }
     const audioName = this.generateFileName();
     await this.s3Client.send(
       new PutObjectCommand({
@@ -102,6 +112,15 @@ export class AudiosService {
     try {
       await this.prisma.audio.create({
         data: postObject,
+      });
+      await this.prisma.order.update({
+        where: {
+          id: createAudioDto.orderid,
+        },
+        data: {
+          audio_name: audioName,
+          status: 'completed',
+        },
       });
     } catch (error) {
       console.log(error);

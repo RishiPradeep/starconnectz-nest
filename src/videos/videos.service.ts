@@ -14,6 +14,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { randomBytes } from 'crypto';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { create } from 'domain';
 
 @Injectable()
 export class VideosService {
@@ -66,6 +67,16 @@ export class VideosService {
         `Fan with username ${createVideoDto.fan_username} not found`,
       );
     }
+    const order = await this.prisma.order.findUnique({
+      where: {
+        id: createVideoDto.orderid,
+      },
+    });
+    if (order === null) {
+      return new NotFoundException(
+        `Order with id ${createVideoDto.orderid} not found`,
+      );
+    }
     const videoName = this.generateFileName();
     await this.s3Client.send(
       new PutObjectCommand({
@@ -87,6 +98,15 @@ export class VideosService {
     try {
       await this.prisma.video.create({
         data: postObject,
+      });
+      await this.prisma.order.update({
+        where: {
+          id: createVideoDto.orderid,
+        },
+        data: {
+          status: 'completed',
+          video_name: videoName,
+        },
       });
     } catch (error) {
       console.log(error);

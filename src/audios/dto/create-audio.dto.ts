@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 export class CreateAudioDto {
   @IsString()
   @IsNotEmpty()
@@ -9,4 +9,7 @@ export class CreateAudioDto {
   @IsNotEmpty()
   @IsString()
   description: string;
+  @IsNumber()
+  @IsNotEmpty()
+  orderid: number;
 }

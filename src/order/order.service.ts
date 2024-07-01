@@ -8,10 +8,26 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { AddOrderDetailsDto } from './dto/add-order-info.dto';
+import { RejectReasonDto } from './dto/reject-reason.dto';
+import { ConfigService } from '@nestjs/config';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()
 export class OrderService {
-  constructor(private prisma: PrismaService) {}
+  private readonly s3Client: S3Client;
+  constructor(
+    private prisma: PrismaService,
+    private readonly configService: ConfigService,
+  ) {
+    this.s3Client = new S3Client({
+      credentials: {
+        accessKeyId: this.configService.getOrThrow('ACCESS_KEY'),
+        secretAccessKey: this.configService.getOrThrow('SECRET_ACCESS_KEY'),
+      },
+      region: this.configService.getOrThrow('BUCKET_REGION'),
+    });
+  }
 
   async checkIfOrderExists(createOrderDto: CreateOrderDto): Promise<Boolean> {
     try {
@@ -86,6 +102,60 @@ export class OrderService {
         );
       }
       return celeb.id;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getOrderDetails(orderid: number, request: any) {
+    try {
+      const order = await this.prisma.order.findUnique({
+        where: {
+          id: orderid,
+        },
+      });
+      if (order === null) {
+        throw new NotFoundException(`Order with id ${orderid} not found`);
+      }
+      if (request.user.type === 'fan') {
+        if (request.user.username != order.fan_username) {
+          throw new UnauthorizedException(
+            `This user does not have access to this resource`,
+          );
+        }
+      }
+      if (request.user.type === 'celeb') {
+        if (request.user.username != order.celeb_username) {
+          throw new UnauthorizedException(
+            `This user does not have access to this resource`,
+          );
+        }
+      }
+      if (order.status === 'rejected') {
+        return { order };
+      }
+      if (order.audio_name === '') {
+        const getObjectParams = {
+          Bucket: this.configService.getOrThrow('VIDEOS_BUCKET_NAME'),
+          Key: order.video_name,
+        };
+        const command = new GetObjectCommand(getObjectParams);
+        const url = await getSignedUrl(this.s3Client, command, {
+          expiresIn: 3600,
+        });
+        (order as any).videoURL = url;
+      }
+      if (order.video_name === '') {
+        const getObjectParams = {
+          Bucket: this.configService.getOrThrow('AUDIOS_BUCKET_NAME'),
+          Key: order.audio_name,
+        };
+        const command = new GetObjectCommand(getObjectParams);
+        const url = await getSignedUrl(this.s3Client, command, {
+          expiresIn: 3600,
+        });
+        (order as any).audioURL = url;
+      }
     } catch (error) {
       throw error;
     }
@@ -240,6 +310,29 @@ export class OrderService {
       },
     });
     return { message: 'Order deleted Sucessfully' };
+  }
+
+  async addRejectReason(orderid: number, rejectReasonDto: RejectReasonDto) {
+    try {
+      const order = await this.prisma.order.findUnique({
+        where: {
+          id: orderid,
+        },
+      });
+      if (order === null) {
+        throw new NotFoundException(`Order with id ${orderid} not found`);
+      }
+      await this.prisma.order.update({
+        where: {
+          id: orderid,
+        },
+        data: {
+          reject_reason: rejectReasonDto.reason,
+        },
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 
   async updateStatus(

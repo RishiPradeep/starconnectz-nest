@@ -17,10 +17,20 @@ import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Request } from 'express';
 import { AddOrderDetailsDto } from './dto/add-order-info.dto';
+import { RejectReasonDto } from './dto/reject-reason.dto';
 
 @Controller('order')
 export class OrderController {
   constructor(private orderService: OrderService) {}
+
+  @UseGuards(AuthGuard)
+  @Get('getDetails/:orderid')
+  async getOrderDetails(
+    @Param('orderid', ParseIntPipe) orderid: number,
+    @Req() request: Request,
+  ) {
+    return await this.orderService.getOrderDetails(orderid, request);
+  }
 
   @UseGuards(AuthGuard)
   @Get('fan/:username')
@@ -70,6 +80,15 @@ export class OrderController {
       addOrderDetailsDto,
       request,
     );
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('rejectReason/:orderid')
+  async addRejectReason(
+    @Param('orderid', ParseIntPipe) orderid: number,
+    @Body(ValidationPipe) rejectReasonDto: RejectReasonDto,
+  ) {
+    return await this.orderService.addRejectReason(orderid, rejectReasonDto);
   }
 
   @UseGuards(AuthGuard)
