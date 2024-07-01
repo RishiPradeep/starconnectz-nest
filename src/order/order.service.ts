@@ -7,6 +7,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
+import { AddOrderDetailsDto } from './dto/add-order-info.dto';
 
 @Injectable()
 export class OrderService {
@@ -181,6 +182,41 @@ export class OrderService {
     }
   }
 
+  async addOrderDetails(
+    orderid: number,
+    addOrderDetailsDto: AddOrderDetailsDto,
+    request: any,
+  ) {
+    try {
+      const order = await this.prisma.order.findUnique({
+        where: {
+          id: orderid,
+        },
+      });
+      if (order === null) {
+        throw new NotFoundException(`Order with id ${orderid} not found`);
+      }
+      if (request.user.username != order.fan_username) {
+        throw new UnauthorizedException(
+          `This user is not allowed to access this resource`,
+        );
+      }
+      await this.prisma.order.update({
+        where: {
+          id: orderid,
+        },
+        data: {
+          occassion: addOrderDetailsDto.occasion,
+          wishes_to: addOrderDetailsDto.wishes_to,
+          additional_info: addOrderDetailsDto.additional_info,
+        },
+      });
+      return { message: 'Order Details Added Successfully' };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async deleteOrder(orderid: number, request: any) {
     const order = await this.prisma.order.findUnique({
       where: {
@@ -190,7 +226,10 @@ export class OrderService {
     if (order === null) {
       throw new NotFoundException(`Order with ${orderid} not found`);
     }
-    if (order.fan_username != request.user.username) {
+    if (
+      order.fan_username != request.user.username &&
+      order.celeb_username != request.user.username
+    ) {
       throw new UnauthorizedException(
         'This user does not have permission to access this resource',
       );

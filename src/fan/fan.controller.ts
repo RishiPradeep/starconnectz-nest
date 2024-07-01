@@ -43,6 +43,15 @@ export class FanController {
     return await this.fanService.followOne(followCelebDto, request);
   }
 
+  @UseGuards(AuthGuard)
+  @Post('unfollow')
+  async unfollowOne(
+    @Body(ValidationPipe) unfollowCelebDto: FollowCelebDto,
+    @Req() request: Request,
+  ) {
+    return await this.fanService.unfollowOne(unfollowCelebDto, request);
+  }
+
   @UseGuards(AuthGuard, ValidationGuard)
   @Patch(':username')
   async updateOne(

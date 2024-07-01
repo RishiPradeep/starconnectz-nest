@@ -149,6 +149,51 @@ export class FanService {
     }
   }
 
+  async unfollowOne(unfollowCelebDto: FollowCelebDto, request: any) {
+    try {
+      if (request.user.username != unfollowCelebDto.fan_username) {
+        throw new UnauthorizedException(
+          'This user is not allowed to access this resource',
+        );
+      }
+      const fan = await this.prisma.fan.findUnique({
+        where: {
+          username: unfollowCelebDto.fan_username,
+        },
+      });
+      if (fan === null) {
+        throw new NotFoundException(
+          `Fan with username ${unfollowCelebDto.fan_username} does not exist`,
+        );
+      }
+      const celeb = await this.prisma.celeb.findUnique({
+        where: {
+          username: unfollowCelebDto.celeb_username,
+        },
+      });
+      if (celeb === null) {
+        throw new NotFoundException(
+          `Celeb with username ${unfollowCelebDto.celeb_username} does not exist`,
+        );
+      }
+      await this.prisma.fan.update({
+        where: {
+          username: unfollowCelebDto.fan_username,
+        },
+        data: {
+          following: {
+            disconnect: { id: celeb.id },
+          },
+        },
+      });
+      return {
+        message: `${unfollowCelebDto.fan_username} is not following ${unfollowCelebDto.celeb_username} anymore`,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async updateOne(username: string, updateFanDto: UpdateFanDto) {
     try {
       const fan = await this.prisma.fan.findUnique({

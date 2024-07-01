@@ -32,15 +32,15 @@ model celeb {
 }
 
 model fan {
-  id            Int         @id @default(autoincrement())
-  username      String      @unique
-  email         String      @unique
-  password      String
-  phone         String
-  verified      Boolean     @default(false)
-  createdAt     DateTime    @default(now())
-  following     celeb[]     @relation("User_follows")
-  orders        order[]
+  id                      Int         @id @default(autoincrement())
+  username                String      @unique
+  email                   String      @unique
+  password                String
+  phone                   String
+  verified                Boolean     @default(false)
+  createdAt               DateTime    @default(now())
+  following               celeb[]     @relation("User_follows")
+  orders                  order[]
   @@unique([id,username])
 }
 
@@ -65,6 +65,9 @@ model order {
   fan_username      String
   celeb_username    String
   service_details   String
+  occassion         String       @default("occassion")
+  wishes_to         String       @default("wishes_to")
+  additional_info   String       @default("additional_info")
   celeb             celeb        @relation(fields: [celebid,celeb_username], references: [id,username], onDelete: Cascade, onUpdate: Cascade)
   fan               fan          @relation(fields: [fanid,fan_username], references: [id,username], onDelete: Cascade, onUpdate: Cascade)
   service           service      @relation(fields: [serviceid,service_details], references: [id,description], onDelete: Cascade, onUpdate: Cascade)
@@ -81,4 +84,28 @@ orders              order[]
 category            String
 celeb               celeb        @relation(fields: [celebid,celeb_username], references: [id,username], onDelete: Cascade, onUpdate: Cascade)
 @@unique([id,description])
+}
+
+model video {
+  id                Int         @id @default(autoincrement())
+  filename          String
+  celebid           Int
+  celeb_username    String
+  fanid             Int
+  fan_username      String
+  created_at        DateTime    @default(now())
+  status            String
+  description       String      @default("Video Description")
+}
+
+model audio {
+  id                Int         @id @default(autoincrement())
+  filename          String
+  celebid           Int
+  celeb_username    String
+  fanid             Int
+  fan_username      String
+  created_at        DateTime    @default(now())
+  status            String
+  description       String      @default("Video Description")
 }

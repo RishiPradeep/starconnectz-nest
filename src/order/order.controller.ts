@@ -16,6 +16,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Request } from 'express';
+import { AddOrderDetailsDto } from './dto/add-order-info.dto';
 
 @Controller('order')
 export class OrderController {
@@ -55,6 +56,20 @@ export class OrderController {
     @Req() request: Request,
   ) {
     return await this.orderService.deleteOrder(orderid, request);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('addDetails/:orderid')
+  async addOrderDetails(
+    @Param('orderid', ParseIntPipe) orderid: number,
+    @Body(ValidationPipe) addOrderDetailsDto: AddOrderDetailsDto,
+    @Req() request: Request,
+  ) {
+    return await this.orderService.addOrderDetails(
+      orderid,
+      addOrderDetailsDto,
+      request,
+    );
   }
 
   @UseGuards(AuthGuard)
