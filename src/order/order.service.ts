@@ -156,6 +156,7 @@ export class OrderService {
         });
         (order as any).audioURL = url;
       }
+      return { order };
     } catch (error) {
       throw error;
     }
