@@ -69,7 +69,7 @@ export class VideosService {
     }
     const order = await this.prisma.order.findUnique({
       where: {
-        id: createVideoDto.orderid,
+        id: parseInt(createVideoDto.orderid),
       },
     });
     if (order === null) {
@@ -101,7 +101,7 @@ export class VideosService {
       });
       await this.prisma.order.update({
         where: {
-          id: createVideoDto.orderid,
+          id: parseInt(createVideoDto.orderid),
         },
         data: {
           status: 'completed',

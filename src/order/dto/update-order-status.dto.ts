@@ -2,8 +2,9 @@ import { IsEnum, IsNotEmpty } from 'class-validator';
 
 enum categories {
   PENDING = 'pending',
-  INPROGRESS = 'rejected',
+  ACCEPTED = 'accepted',
   COMPLETED = 'completed',
+  REJECTED = 'rejected',
 }
 
 export class UpdateOrderStatusDto {

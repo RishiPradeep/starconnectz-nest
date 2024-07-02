@@ -83,7 +83,7 @@ export class AudiosService {
     }
     const order = await this.prisma.order.findUnique({
       where: {
-        id: createAudioDto.orderid,
+        id: parseInt(createAudioDto.orderid),
       },
     });
     if (order === null) {
@@ -115,7 +115,7 @@ export class AudiosService {
       });
       await this.prisma.order.update({
         where: {
-          id: createAudioDto.orderid,
+          id: parseInt(createAudioDto.orderid),
         },
         data: {
           audio_name: audioName,

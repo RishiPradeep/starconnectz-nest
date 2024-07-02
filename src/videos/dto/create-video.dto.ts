@@ -1,5 +1,4 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
-import { isNullOrUndefined } from 'util';
 export class CreateVideoDto {
   @IsString()
   @IsNotEmpty()
@@ -10,7 +9,7 @@ export class CreateVideoDto {
   @IsNotEmpty()
   @IsString()
   description: string;
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  orderid: number;
+  orderid: string;
 }

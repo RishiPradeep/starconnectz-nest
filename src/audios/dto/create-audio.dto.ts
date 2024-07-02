@@ -9,7 +9,7 @@ export class CreateAudioDto {
   @IsNotEmpty()
   @IsString()
   description: string;
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  orderid: number;
+  orderid: string;
 }
