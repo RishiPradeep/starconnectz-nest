@@ -13,6 +13,7 @@ import { memoryStorage } from 'multer';
 import { AuthModule } from './auth/auth.module';
 import { VideosModule } from './videos/videos.module';
 import { AudiosModule } from './audios/audios.module';
+import { MeetingModule } from './meeting/meeting.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AudiosModule } from './audios/audios.module';
     AuthModule,
     VideosModule,
     AudiosModule,
+    MeetingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

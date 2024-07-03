@@ -112,3 +112,14 @@ model audio {
   status            String
   description       String      @default("Video Description")
 }
+
+model meeting {
+  id                Int         @id @default(autoincrement())
+  celeb_username    String
+  celebid           Int
+  celeb_token       String      @default("")         
+  call_id           String      @unique
+  fan_username      String
+  fanid             Int
+  status            String      @default("pending")
+}
