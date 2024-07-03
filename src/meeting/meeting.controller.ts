@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { MeetingService } from './meeting.service';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { Request } from 'express';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
 
