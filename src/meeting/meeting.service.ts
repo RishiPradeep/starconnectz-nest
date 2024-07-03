@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -42,6 +43,14 @@ export class MeetingService {
         throw new NotFoundException(
           `Fan with username ${createMeetingDto.fan_username} not found`,
         );
+      }
+      const checkUniqueID = await this.prisma.meeting.findUnique({
+        where: {
+          call_id: createMeetingDto.call_id,
+        },
+      });
+      if (checkUniqueID != null) {
+        throw new ConflictException(`Meeting with this id already exists`);
       }
       const stream_api_key = this.configService.getOrThrow('STREAM_API_KEY');
       const stream_api_secret =
