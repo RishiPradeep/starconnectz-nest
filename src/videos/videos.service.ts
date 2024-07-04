@@ -151,7 +151,7 @@ export class VideosService {
         });
         (item as any).videoURL = url;
       }
-      return { videos };
+      return { message: 'Success', videos };
     } catch (error) {
       throw error;
     }
@@ -191,7 +191,7 @@ export class VideosService {
         });
         (item as any).videoURL = url;
       }
-      return { videos };
+      return { message: 'Success', videos };
     } catch (error) {
       throw error;
     }

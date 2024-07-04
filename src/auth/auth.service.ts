@@ -59,7 +59,12 @@ export class AuthService {
         type: loginUserDto.type,
       };
       const token = await this.generateToken(data);
-      return { accessToken: token, userId: data.id, username: data.username };
+      return {
+        message: 'Success',
+        accessToken: token,
+        userId: data.id,
+        username: data.username,
+      };
     } else {
       throw new UnauthorizedException('Incorrect Password');
     }

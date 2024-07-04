@@ -165,7 +165,7 @@ export class AudiosService {
         });
         (item as any).audioURL = url;
       }
-      return { audios };
+      return { message: 'Success', audios };
     } catch (error) {
       throw error;
     }
@@ -205,7 +205,7 @@ export class AudiosService {
         });
         (item as any).audioURL = url;
       }
-      return { audios };
+      return { message: 'Success', audios };
     } catch (error) {
       throw error;
     }

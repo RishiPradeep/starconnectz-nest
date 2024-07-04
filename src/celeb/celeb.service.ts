@@ -64,7 +64,8 @@ export class CelebService {
 
   async findAll() {
     try {
-      return await this.prisma.celeb.findMany();
+      const celebs = await this.prisma.celeb.findMany();
+      return { message: 'Success', celebs };
     } catch (error) {
       throw error;
     }
@@ -102,7 +103,7 @@ export class CelebService {
         });
         (item as any).imageURL = url;
       }
-      return celeb;
+      return { message: 'Success', celeb };
     } catch (error) {
       throw error;
     }
@@ -169,7 +170,7 @@ export class CelebService {
               : `${username}-profile-pic`,
           },
         });
-        return updatedUser;
+        return { message: 'Updated Successfully', updatedUser };
       }
     } catch (error) {
       throw error;

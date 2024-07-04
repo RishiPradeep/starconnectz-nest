@@ -104,7 +104,7 @@ export class MeetingService {
           'This user is not permitted to access this resource',
         );
       }
-      return { order };
+      return { message: 'Success', order };
     } catch (error) {
       throw error;
     }

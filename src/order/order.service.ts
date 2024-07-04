@@ -132,7 +132,7 @@ export class OrderService {
         }
       }
       if (order.status === 'rejected') {
-        return { order };
+        return { message: 'Success', order };
       }
       if (order.audio_name === '') {
         const getObjectParams = {
@@ -156,7 +156,7 @@ export class OrderService {
         });
         (order as any).audioURL = url;
       }
-      return { order };
+      return { message: 'Success', order };
     } catch (error) {
       throw error;
     }
@@ -180,7 +180,7 @@ export class OrderService {
         const dateB = new Date(b.created_at);
         return dateB.getTime() - dateA.getTime();
       });
-      return { orders };
+      return { message: 'Success', orders };
     } catch (error) {
       throw error;
     }
@@ -206,7 +206,7 @@ export class OrderService {
           fanid: fan.id,
         },
       });
-      return { orders };
+      return { message: 'Successs', orders };
     } catch (error) {
       throw error;
     }

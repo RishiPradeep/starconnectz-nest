@@ -140,7 +140,7 @@ export class PostService {
         const dateB = new Date(b);
         return dateA.getTime() - dateB.getTime();
       });
-      return { posts };
+      return { message: 'Success', posts };
     } catch (error) {
       throw error;
     }

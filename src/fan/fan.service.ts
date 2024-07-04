@@ -54,7 +54,8 @@ export class FanService {
 
   async findAll() {
     try {
-      return await this.prisma.fan.findMany();
+      const fans = await this.prisma.fan.findMany();
+      return { message: 'Success', fans };
     } catch (error) {
       throw error;
     }
@@ -74,7 +75,7 @@ export class FanService {
       if (fan === null) {
         throw new NotFoundException(`Fan with username ${username} not found`);
       }
-      return fan;
+      return { message: 'Success', fan };
     } catch (error) {
       throw error;
     }
@@ -223,7 +224,7 @@ export class FanService {
             phone: updateFanDto.phone || fan.phone,
           },
         });
-        return updatedUser;
+        return { message: 'Updated Successfully', updatedUser };
       }
     } catch (error) {
       throw error;
@@ -234,7 +235,7 @@ export class FanService {
     try {
       const fan = await this.findOne(username);
       const feed = [];
-      for (const celeb of fan.following) {
+      for (const celeb of fan.fan.following) {
         if (feed.length == 10) {
           break;
         }
@@ -265,7 +266,7 @@ export class FanService {
         });
         feed.push(posts);
       }
-      return { feed };
+      return { message: 'Success', feed };
     } catch (error) {
       throw error;
     }
@@ -281,11 +282,12 @@ export class FanService {
       if (fan === null) {
         throw new NotFoundException(`Fan with username ${username} not found`);
       } else {
-        return await this.prisma.fan.delete({
+        const deletedUser = await this.prisma.fan.delete({
           where: {
             username: username,
           },
         });
+        return { message: 'Deleted Successfully', deletedUser };
       }
     } catch (error) {
       throw error;

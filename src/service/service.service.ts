@@ -36,7 +36,7 @@ export class ServiceService {
           celebid: celebid,
         },
       });
-      return { services };
+      return { message: 'Success', services };
     } catch (error) {
       throw error;
     }
