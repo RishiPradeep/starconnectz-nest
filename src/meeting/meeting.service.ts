@@ -44,13 +44,23 @@ export class MeetingService {
           `Fan with username ${createMeetingDto.fan_username} not found`,
         );
       }
-      const checkUniqueID = await this.prisma.meeting.findUnique({
+      const order = await this.prisma.order.findUnique({
         where: {
-          call_id: createMeetingDto.call_id,
+          id: createMeetingDto.orderid,
         },
       });
-      if (checkUniqueID != null) {
-        throw new ConflictException(`Meeting with this id already exists`);
+      if (order === null) {
+        throw new NotFoundException(
+          `Order with id ${createMeetingDto.orderid} does not exist`,
+        );
+      }
+      const checkUniqueCallId = await this.prisma.order.findFirst({
+        where: {
+          call_id: createMeetingDto.callid,
+        },
+      });
+      if (checkUniqueCallId != null) {
+        throw new ConflictException(`Order with this call id already exists`);
       }
       const stream_api_key = this.configService.getOrThrow('STREAM_API_KEY');
       const stream_api_secret =
@@ -60,79 +70,41 @@ export class MeetingService {
         stream_api_secret,
       );
       const token = serverClient.createToken(createMeetingDto.celeb_username);
-      const meeting = await this.prisma.meeting.create({
+      const updatedOrder = await this.prisma.order.update({
+        where: {
+          id: createMeetingDto.orderid,
+        },
         data: {
-          celeb_username: createMeetingDto.celeb_username,
-          celebid: createMeetingDto.celebid,
-          fan_username: createMeetingDto.fan_username,
-          fanid: createMeetingDto.fanid,
-          call_id: createMeetingDto.call_id,
+          celeb_username: celeb.username,
+          celebid: celeb.id,
+          fan_username: fan.username,
+          fanid: fan.id,
+          call_id: createMeetingDto.callid,
           celeb_token: token,
         },
       });
-      return { message: 'Meeting created', meeting: meeting };
+      return { message: 'Meeting created', meeting: updatedOrder };
     } catch (error) {
       throw error;
     }
   }
 
-  async getPending(fanid: number, request: any) {
+  async getMeeting(orderid: number, request: any) {
     try {
-      const fan = await this.prisma.fan.findUnique({
+      const order = await this.prisma.order.findUnique({
         where: {
-          id: fanid,
+          id: orderid,
         },
       });
-      if (fan === null) {
-        throw new NotFoundException(`Fan with id ${fanid} not found`);
+      if (order === null) {
+        throw new NotFoundException(`Order with id ${orderid} not found`);
       }
-      if (fan.username != request.user.username) {
+      if (order.fan_username != request.user.username) {
         throw new UnauthorizedException(
           'This user is not permitted to access this resource',
         );
       }
-      const meetings = await this.prisma.meeting.findMany({
-        where: {
-          fanid: fanid,
-          status: 'pending',
-        },
-      });
-      return { meetings };
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async updateStatus(
-    meetingid: number,
-    request: any,
-    updateMeetingDto: UpdateMeetingDto,
-  ) {
-    try {
-      const meeting = await this.prisma.meeting.findUnique({
-        where: {
-          id: meetingid,
-        },
-      });
-      if (meeting === null) {
-        throw new NotFoundException(`Meeting with id ${meeting} not found`);
-      }
-      if (meeting.celeb_username != request.user.username) {
-        throw new UnauthorizedException(
-          'This user does not have permission to access this resource',
-        );
-      }
-      await this.prisma.meeting.update({
-        where: {
-          id: meetingid,
-        },
-        data: {
-          status: updateMeetingDto.status,
-        },
-      });
-      return {
-        message: `Updated status to ${updateMeetingDto.status} successfully`,
-      };
+      return { order };
     } catch (error) {
       throw error;
     }

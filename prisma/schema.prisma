@@ -65,6 +65,8 @@ model order {
   fan_username      String
   celeb_username    String
   service_details   String
+  call_id           String       @default("")
+  celeb_token       String       @default("")
   audio_name        String       @default("")
   video_name        String       @default("")
   reject_reason     String       @default("")
@@ -111,15 +113,4 @@ model audio {
   created_at        DateTime    @default(now())
   status            String
   description       String      @default("Video Description")
-}
-
-model meeting {
-  id                Int         @id @default(autoincrement())
-  celeb_username    String
-  celebid           Int
-  celeb_token       String      @default("")         
-  call_id           String      @unique
-  fan_username      String
-  fanid             Int
-  status            String      @default("pending")
 }

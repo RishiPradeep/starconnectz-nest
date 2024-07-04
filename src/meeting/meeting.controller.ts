@@ -30,25 +30,11 @@ export class MeetingController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('pendingMeetings/:fanid')
+  @Get('getMeeting/:orderid')
   async getPending(
-    @Param('fanid', ParseIntPipe) fanid: number,
+    @Param('orderid', ParseIntPipe) orderid: number,
     @Req() request: Request,
   ) {
-    return await this.meetingService.getPending(fanid, request);
-  }
-
-  @UseGuards(AuthGuard)
-  @Patch(':meetingid')
-  async updateStatus(
-    @Param('meetingid', ParseIntPipe) meetingid: number,
-    @Req() request: Request,
-    @Body() updateMeetingDto: UpdateMeetingDto,
-  ) {
-    return await this.meetingService.updateStatus(
-      meetingid,
-      request,
-      updateMeetingDto,
-    );
+    return await this.meetingService.getMeeting(orderid, request);
   }
 }

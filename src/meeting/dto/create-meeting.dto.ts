@@ -4,16 +4,13 @@ export class CreateMeetingDto {
   @IsString()
   @IsNotEmpty()
   celeb_username: string;
-  @IsNumber()
-  @IsNotEmpty()
-  celebid: number;
   @IsString()
   @IsNotEmpty()
   fan_username: string;
   @IsNumber()
   @IsNotEmpty()
-  fanid: number;
+  orderid: number;
   @IsString()
   @IsNotEmpty()
-  call_id: string;
+  callid: string;
 }
