@@ -71,7 +71,7 @@ export class CelebService {
     }
   }
 
-  async findOne(username: string) {
+  async findOne(username: string, request: any) {
     try {
       const celeb = await this.prisma.celeb.findUnique({
         where: {
@@ -103,7 +103,12 @@ export class CelebService {
         });
         (item as any).imageURL = url;
       }
-      return { message: 'Success', celeb };
+      return {
+        message: 'Success',
+        celeb,
+        loogedin_userID: request.user.id,
+        loggedin_username: request.user.usernam,
+      };
     } catch (error) {
       throw error;
     }

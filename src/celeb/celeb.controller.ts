@@ -36,8 +36,8 @@ export class CelebController {
 
   @UseGuards(AuthGuard)
   @Get(':username')
-  async findOne(@Param('username') username: string) {
-    return await this.celebService.findOne(username);
+  async findOne(@Param('username') username: string, @Req() request: Request) {
+    return await this.celebService.findOne(username, request);
   }
 
   @Post()
@@ -52,7 +52,7 @@ export class CelebController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 3000000 }),
+          new MaxFileSizeValidator({ maxSize: 15000000 }),
           new FileTypeValidator({ fileType: 'image/jpeg' }),
         ],
       }),

@@ -32,7 +32,7 @@ export class VideosController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 50000000 }),
+          new MaxFileSizeValidator({ maxSize: 200000000 }),
           new FileTypeValidator({ fileType: 'video/mp4' }),
         ],
       }),
