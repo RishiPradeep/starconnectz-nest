@@ -5,6 +5,7 @@ enum categories {
   ACCEPTED = 'accepted',
   COMPLETED = 'completed',
   REJECTED = 'rejected',
+  INPROGRESS = 'inprogress',
 }
 
 export class UpdateOrderStatusDto {
