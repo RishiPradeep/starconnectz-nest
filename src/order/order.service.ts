@@ -331,6 +331,7 @@ export class OrderService {
           reject_reason: rejectReasonDto.reason,
         },
       });
+      return { message: 'Reject reason added', reason: rejectReasonDto.reason };
     } catch (error) {
       throw error;
     }
