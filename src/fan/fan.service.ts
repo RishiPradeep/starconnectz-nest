@@ -38,6 +38,14 @@ export class FanService {
       if (checkUsername) {
         return [true, `username-${username}`];
       }
+      const checkCelebUsername = await this.prisma.celeb.findUnique({
+        where: {
+          username: username,
+        },
+      });
+      if (checkCelebUsername) {
+        return [true, `username-${username}`];
+      }
     }
     if (email) {
       const checkEmail = await this.prisma.fan.findUnique({

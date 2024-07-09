@@ -48,6 +48,14 @@ export class CelebService {
       if (checkUsername) {
         return [true, `username-${username}`];
       }
+      const checkFanUsername = await this.prisma.fan.findUnique({
+        where: {
+          username: username,
+        },
+      });
+      if (checkFanUsername) {
+        return [true, `username-${username}`];
+      }
     }
     if (email) {
       const checkEmail = await this.prisma.celeb.findUnique({
