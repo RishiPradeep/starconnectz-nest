@@ -212,6 +212,7 @@ export class CelebService {
         );
       }
       const newBuffer = await sharp(file)
+        .rotate()
         .resize({ height: 320, width: 320, fit: 'contain' })
         .toBuffer();
       const bucketName = await this.configService.getOrThrow(

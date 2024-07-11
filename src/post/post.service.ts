@@ -41,6 +41,7 @@ export class PostService {
 
   async resizeImage(file: Buffer): Promise<Buffer> {
     const newBuffer = await sharp(file)
+      .rotate()
       .resize({ height: 1920, width: 1080, fit: 'contain' })
       .toBuffer();
     return newBuffer;
