@@ -178,9 +178,6 @@ export class CelebService {
             username: updateCelebDto.username || celeb.username,
             email: updateCelebDto.email || celeb.email,
             socials: updateCelebDto.socials || celeb.socials,
-            profile_pic: updateCelebDto.username
-              ? `${updateCelebDto.username}-profile-pic`
-              : `${username}-profile-pic`,
           },
         });
         return { message: 'Updated Successfully', updatedUser };
