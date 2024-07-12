@@ -115,7 +115,7 @@ export class CelebService {
         message: 'Success',
         celeb,
         loogedin_userID: request.user.id,
-        loggedin_username: request.user.usernam,
+        loggedin_username: request.user.username,
       };
     } catch (error) {
       throw error;
