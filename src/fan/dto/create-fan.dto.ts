@@ -13,4 +13,7 @@ export class CreateFanDto {
   @IsString()
   @IsNotEmpty()
   phone: string;
+  @IsString()
+  @IsNotEmpty()
+  country: string;
 }

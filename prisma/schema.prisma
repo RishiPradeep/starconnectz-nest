@@ -28,6 +28,7 @@ model celeb {
    services    service[]
    followers   fan[]       @relation("User_follows")
    orders      order[]
+   country     String      @default("Not_Found")
    @@unique([id,username])
 }
 
@@ -41,6 +42,7 @@ model fan {
   createdAt               DateTime    @default(now())
   following               celeb[]     @relation("User_follows")
   orders                  order[]
+  country                 String      @default("Not_Found")
   @@unique([id,username])
 }
 

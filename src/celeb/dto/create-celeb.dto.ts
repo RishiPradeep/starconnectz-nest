@@ -15,4 +15,7 @@ export class CreateCelebDto {
   @IsString()
   @IsNotEmpty()
   socials: string;
+  @IsString()
+  @IsNotEmpty()
+  country: string;
 }

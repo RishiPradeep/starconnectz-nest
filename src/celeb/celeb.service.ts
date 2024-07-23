@@ -79,6 +79,19 @@ export class CelebService {
     }
   }
 
+  async findByCountry(country: string) {
+    try {
+      const celebs = await this.prisma.celeb.findMany({
+        where: {
+          country: country,
+        },
+      });
+      return { message: 'Success', celebs };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async findOne(username: string, request: any) {
     try {
       const celeb = await this.prisma.celeb.findUnique({
@@ -140,6 +153,7 @@ export class CelebService {
           email: createCelebDto.email,
           socials: createCelebDto.socials,
           password: await bcrypt.hash(createCelebDto.password, salt),
+          country: createCelebDto.country,
         },
       });
       return { message: 'Celeb Created', celeb };

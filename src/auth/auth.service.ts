@@ -57,6 +57,7 @@ export class AuthService {
         username: user.username,
         id: user.id,
         type: loginUserDto.type,
+        country: user.country,
       };
       const token = await this.generateToken(data);
       return {
@@ -64,6 +65,7 @@ export class AuthService {
         accessToken: token,
         userId: data.id,
         username: data.username,
+        country: data.country,
       };
     } else {
       throw new UnauthorizedException('Incorrect Password');

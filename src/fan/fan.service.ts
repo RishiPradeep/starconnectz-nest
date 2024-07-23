@@ -107,6 +107,7 @@ export class FanService {
           email: createFanDto.email,
           phone: createFanDto.phone,
           password: await bcrypt.hash(createFanDto.password, salt),
+          country: createFanDto.country,
         },
       });
       return { message: 'Fan Created', fan };

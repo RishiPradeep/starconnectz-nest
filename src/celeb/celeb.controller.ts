@@ -35,6 +35,12 @@ export class CelebController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('/country/:country')
+  async findByCountry(@Param('country') country: string) {
+    return await this.celebService.findByCountry(country);
+  }
+
+  @UseGuards(AuthGuard)
   @Get(':username')
   async findOne(@Param('username') username: string, @Req() request: Request) {
     return await this.celebService.findOne(username, request);
