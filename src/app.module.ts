@@ -14,6 +14,7 @@ import { AuthModule } from './auth/auth.module';
 import { VideosModule } from './videos/videos.module';
 import { AudiosModule } from './audios/audios.module';
 import { MeetingModule } from './meeting/meeting.module';
+import { MerchModule } from './merch/merch.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { MeetingModule } from './meeting/meeting.module';
     VideosModule,
     AudiosModule,
     MeetingModule,
+    MerchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

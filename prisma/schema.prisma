@@ -28,6 +28,7 @@ model celeb {
    services    service[]
    followers   fan[]       @relation("User_follows")
    orders      order[]
+   merch       merch[]
    country     String      @default("Not_Found")
    @@unique([id,username])
 }
@@ -115,4 +116,16 @@ model audio {
   created_at        DateTime    @default(now())
   status            String
   description       String      @default("Video Description")
+}
+
+model merch {
+  id                Int         @id @default(autoincrement())
+  price             Int
+  description       String      @db.MediumText
+  status            String
+  imagename         String
+  celeb_username    String
+  created_at        DateTime    @default(now())
+  celebid           Int
+  celeb             celeb       @relation(fields: [celeb_username,celebid], references: [username,id], onDelete: Cascade, onUpdate: Cascade)
 }
