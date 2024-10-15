@@ -105,6 +105,7 @@ export class CelebService {
             },
           },
           services: true,
+          merch: true,
           followers: true,
         },
       });
@@ -123,6 +124,17 @@ export class CelebService {
           expiresIn: 3600,
         });
         (item as any).imageURL = url;
+      }
+      for (const item of celeb.merch) {
+        const getObjectParams2 = {
+          Bucket: this.configService.getOrThrow('MERCH_BUCKET_NAME'),
+          Key: item.imagename,
+        };
+        const command2 = new GetObjectCommand(getObjectParams2);
+        const url2 = await getSignedUrl(this.s3Client, command2, {
+          expiresIn: 3600,
+        });
+        (item as any).imageURL = url2;
       }
       return {
         message: 'Success',
