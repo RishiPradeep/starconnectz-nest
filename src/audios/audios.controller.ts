@@ -2,9 +2,7 @@ import {
   Body,
   Controller,
   Delete,
-  FileTypeValidator,
   Get,
-  MaxFileSizeValidator,
   Param,
   ParseFilePipe,
   ParseIntPipe,
@@ -19,13 +17,18 @@ import { AudiosService } from './audios.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateAudioDto } from './dto/create-audio.dto';
+import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { MaxFileSizeValidator } from '@nestjs/common/pipes';
 
 @Controller('audios')
+@ApiTags('Audios')
 export class AudiosController {
   constructor(private audiosService: AudiosService) {}
 
   @UseGuards(AuthGuard)
   @Post()
+  @ApiOperation({ summary: 'Upload a new audio file' })
+  @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('audio'))
   async uploadAudio(
     @UploadedFile(
@@ -47,19 +50,22 @@ export class AudiosController {
 
   @UseGuards(AuthGuard)
   @Get('celeb/:username')
-  async getCelebVideos(@Param('username') username: string, request: Request) {
+  @ApiOperation({ summary: 'Retrieve all audios for a specific celebrity' })
+  async getCelebAudios(@Param('username') username: string, request: Request) {
     return await this.audiosService.getCelebAudios(username, request);
   }
 
   @UseGuards(AuthGuard)
   @Get('fan/:username')
-  async getFanVideos(@Param('username') username: string, request: Request) {
+  @ApiOperation({ summary: 'Retrieve all audios for a specific fan' })
+  async getFanAudios(@Param('username') username: string, request: Request) {
     return await this.audiosService.getFanAudios(username, request);
   }
 
   @UseGuards(AuthGuard)
   @Delete(':id')
-  async deleteVideo(@Param('id', ParseIntPipe) id: number, request: Request) {
+  @ApiOperation({ summary: 'Delete an audio file by ID' })
+  async deleteAudio(@Param('id', ParseIntPipe) id: number, request: Request) {
     return await this.audiosService.deleteAudio(id, request);
   }
 }

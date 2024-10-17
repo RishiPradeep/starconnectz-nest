@@ -20,14 +20,18 @@ import { PostService } from './post.service';
 import { DeletePostDto } from './dto/delete-post.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Request } from 'express';
+import { ApiTags, ApiOperation, ApiConsumes } from '@nestjs/swagger';
 
 @Controller('post')
+@ApiTags('Post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @UseGuards(AuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('image'))
+  @ApiOperation({ summary: 'Upload a new post with an image' }) // Added summary
+  @ApiConsumes('multipart/form-data')
   async uploadPost(
     @UploadedFile(
       new ParseFilePipe({
@@ -46,12 +50,14 @@ export class PostController {
 
   @UseGuards(AuthGuard)
   @Get(':username')
+  @ApiOperation({ summary: 'Get posts for a specific celebrity' }) // Added summary
   async getCelebPosts(@Param('username') username: string) {
     return await this.postService.getCelebPosts(username);
   }
 
   @UseGuards(AuthGuard)
   @Delete()
+  @ApiOperation({ summary: 'Delete a post' }) // Added summary
   async deleteOnePost(
     @Body(ValidationPipe) deletePostDto: DeletePostDto,
     @Req() request: Request,

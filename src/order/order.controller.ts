@@ -18,13 +18,16 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { Request } from 'express';
 import { AddOrderDetailsDto } from './dto/add-order-info.dto';
 import { RejectReasonDto } from './dto/reject-reason.dto';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @Controller('order')
+@ApiTags('Order')
 export class OrderController {
   constructor(private orderService: OrderService) {}
 
   @UseGuards(AuthGuard)
   @Get('getDetails/:orderid')
+  @ApiOperation({ summary: 'Get order details by order ID' }) // Added summary
   async getOrderDetails(
     @Param('orderid', ParseIntPipe) orderid: number,
     @Req() request: Request,
@@ -34,6 +37,7 @@ export class OrderController {
 
   @UseGuards(AuthGuard)
   @Get('fan/:username')
+  @ApiOperation({ summary: 'Get orders for a specific fan' }) // Added summary
   async getFanOrders(
     @Param('username') username: string,
     @Req() request: Request,
@@ -43,6 +47,7 @@ export class OrderController {
 
   @UseGuards(AuthGuard)
   @Get('celeb/:username')
+  @ApiOperation({ summary: 'Get orders for a specific celebrity' }) // Added summary
   async getCelebOrders(
     @Param('username') username: string,
     @Req() request: Request,
@@ -52,6 +57,7 @@ export class OrderController {
 
   @UseGuards(AuthGuard)
   @Post()
+  @ApiOperation({ summary: 'Create a new order' }) // Added summary
   async createOrder(
     @Body(ValidationPipe) createOrderDto: CreateOrderDto,
     @Req() request: Request,
@@ -61,6 +67,7 @@ export class OrderController {
 
   @UseGuards(AuthGuard)
   @Delete(':orderid')
+  @ApiOperation({ summary: 'Delete an order by order ID' }) // Added summary
   async deleteOrder(
     @Param('orderid', ParseIntPipe) orderid: number,
     @Req() request: Request,
@@ -70,6 +77,7 @@ export class OrderController {
 
   @UseGuards(AuthGuard)
   @Post('addDetails/:orderid')
+  @ApiOperation({ summary: 'Add details to an existing order' }) // Added summary
   async addOrderDetails(
     @Param('orderid', ParseIntPipe) orderid: number,
     @Body(ValidationPipe) addOrderDetailsDto: AddOrderDetailsDto,
@@ -84,6 +92,7 @@ export class OrderController {
 
   @UseGuards(AuthGuard)
   @Patch('rejectReason/:orderid')
+  @ApiOperation({ summary: 'Add a rejection reason for an order' }) // Added summary
   async addRejectReason(
     @Param('orderid', ParseIntPipe) orderid: number,
     @Body(ValidationPipe) rejectReasonDto: RejectReasonDto,
@@ -93,6 +102,7 @@ export class OrderController {
 
   @UseGuards(AuthGuard)
   @Patch(':orderid')
+  @ApiOperation({ summary: 'Update the status of an order' }) // Added summary
   async updateStatus(
     @Param('orderid', ParseIntPipe) orderid: number,
     @Body(ValidationPipe) updateOrderStatusDto: UpdateOrderStatusDto,

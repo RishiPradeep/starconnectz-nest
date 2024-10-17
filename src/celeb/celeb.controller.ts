@@ -23,36 +23,44 @@ import { UpdateProfilePicDto } from './dto/update-profile-pic.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ValidationGuard } from 'src/auth/validation.guard';
 import { Request } from 'express';
+import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Controller('celeb')
+@ApiTags('Celeb')
 export class CelebController {
   constructor(private readonly celebService: CelebService) {}
 
   @UseGuards(AuthGuard)
   @Get()
+  @ApiOperation({ summary: 'Retrieve a list of all celebrities' }) // Added summary
   async findAll() {
     return await this.celebService.findAll();
   }
 
   @UseGuards(AuthGuard)
   @Get('/country/:country')
+  @ApiOperation({ summary: 'Retrieve celebrities by country' }) // Added summary
   async findByCountry(@Param('country') country: string) {
     return await this.celebService.findByCountry(country);
   }
 
   @UseGuards(AuthGuard)
   @Get(':username')
+  @ApiOperation({ summary: 'Retrieve a specific celebrity by username' }) // Added summary
   async findOne(@Param('username') username: string, @Req() request: Request) {
     return await this.celebService.findOne(username, request);
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create a new celebrity profile' }) // Added summary
   async createOne(@Body(ValidationPipe) createCelebDto: CreateCelebDto) {
     return await this.celebService.createOne(createCelebDto);
   }
 
   @UseGuards(AuthGuard)
   @Post('updateProfilePic')
+  @ApiOperation({ summary: 'Update celebrity profile picture' }) // Added summary
+  @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image'))
   async updateProfilePic(
     @UploadedFile(
@@ -76,6 +84,7 @@ export class CelebController {
 
   @UseGuards(AuthGuard, ValidationGuard)
   @Patch(':username')
+  @ApiOperation({ summary: 'Update a celebrity profile by username' }) // Added summary
   async updateOne(
     @Param('username') username: string,
     @Body(ValidationPipe) updateCelebDto: UpdateCelebDto,
@@ -85,6 +94,7 @@ export class CelebController {
 
   @UseGuards(AuthGuard, ValidationGuard)
   @Delete(':username')
+  @ApiOperation({ summary: 'Delete a celebrity profile by username' }) // Added summary
   async deleteOne(@Param('username') username: string) {
     return await this.celebService.deleteOne(username);
   }
